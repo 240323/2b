@@ -4,8 +4,13 @@ import java.util.Scanner;
 
 public class DFAValidator {
     public static void main(String[] args) throws FileNotFoundException {
+        if (args.length != 2) {
+            System.err.println("Usage: java DFAValidator <DFA file> <input string file>");
+            System.exit(1);
+        }
+
         // テキストファイルからDFAを読み込む
-        Scanner dfaScanner = new Scanner(new File("/Users/beeks/OneDrive/ドキュメント/講義/計算理論/2b/dfa.txt"));
+        Scanner dfaScanner = new Scanner(new File(args[0]));
         int numStates = dfaScanner.nextInt(); //DFAの状態数
         int numSymbols = dfaScanner.nextInt();//DFAの入力の数　
         int numFinalStates = dfaScanner.nextInt();//DFAの受理状態の数
@@ -26,7 +31,7 @@ public class DFAValidator {
         dfaScanner.close();
 
         // テキストファイルから文字列wを読み込む
-        Scanner wScanner = new Scanner(new File("/Users/beeks/OneDrive/ドキュメント/講義/計算理論/2b/w.txt"));
+        Scanner wScanner = new Scanner(new File(args[1]));
         int length = Integer.parseInt(wScanner.nextLine());
         String w = "";
         if (length > 0) {
