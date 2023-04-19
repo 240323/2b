@@ -6,27 +6,32 @@ public class DFAValidator {
     public static void main(String[] args) throws FileNotFoundException {
         // テキストファイルからDFAを読み込む
         Scanner dfaScanner = new Scanner(new File("/Users/beeks/OneDrive/ドキュメント/講義/計算理論/2b/dfa.txt"));
-        int numStates = dfaScanner.nextInt();
-        int numSymbols = dfaScanner.nextInt();
-        int startState = dfaScanner.nextInt();
-        dfaScanner.nextLine();
+        int numStates = dfaScanner.nextInt(); //DFAの状態数
+        int numSymbols = dfaScanner.nextInt();//DFAの入力の数　
+        int numFinalStates = dfaScanner.nextInt();//DFAの受理状態の数
+        dfaScanner.nextLine();//DFAのアルファベットの記号を表す文字列
         String alphabet = dfaScanner.nextLine();
         int[][] transitions = new int[numStates][numSymbols];
-        for (int i = 0; i < numStates; i++) {
+        for (int i = 0; i < numStates; i++) {//DFAの遷移関数のテーブルを読み込んで、二次元配列transitionsに格納
             String[] line = dfaScanner.nextLine().split(" ");
             for (int j = 0; j < numSymbols; j++) {
                 transitions[i][j] = Integer.parseInt(line[j]);
             }
         }
-        int[] acceptStates = new int[dfaScanner.nextInt()];
-        for (int i = 0; i < acceptStates.length; i++) {
+        int startState = dfaScanner.nextInt();//DFAの初期状態
+        int[] acceptStates = new int[numFinalStates];
+        for (int i = 0; i < numFinalStates; i++) {
             acceptStates[i] = dfaScanner.nextInt();
         }
         dfaScanner.close();
 
         // テキストファイルから文字列wを読み込む
         Scanner wScanner = new Scanner(new File("/Users/beeks/OneDrive/ドキュメント/講義/計算理論/2b/w.txt"));
-        String w = wScanner.nextLine();
+        int length = Integer.parseInt(wScanner.nextLine());
+        String w = "";
+        if (length > 0) {
+            w = wScanner.nextLine();
+        }
         wScanner.close();
 
         // DFAが文字列wを受理するかどうかを判断する
@@ -37,7 +42,7 @@ public class DFAValidator {
                 System.err.println("Invalid symbol in w: " + w.charAt(i));
                 System.exit(1);
             }
-            currentState = transitions[currentState][symbolIndex];
+            currentState = transitions[currentState -1][symbolIndex];
         }
         for (int acceptState : acceptStates) {
             if (currentState == acceptState) {
