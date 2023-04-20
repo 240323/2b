@@ -1,11 +1,10 @@
-//問題2を解く
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class DFAValidator {
+public class DFALanguageValidator {
     public static void main(String[] args) throws FileNotFoundException {
-        if (args.length != 2) {
+        if (args.length != 1) {
             System.err.println("Usage: java DFAValidator <DFA file> <input string file>");
             System.exit(1);
         }
@@ -17,11 +16,15 @@ public class DFAValidator {
         int numStates = dfaScanner.nextInt(); //DFAの状態数
         int numSymbols = dfaScanner.nextInt();//DFAの入力の数　
         int numFinalStates = dfaScanner.nextInt();//DFAの受理状態の数
-        dfaScanner.nextLine();//DFAのアルファベットの記号を表す文字列
-        String alphabet = dfaScanner.nextLine();
+        dfaScanner.nextLine();
+        String alphabet = dfaScanner.nextLine();//DFAのアルファベットの記号を表す文字列
         int[][] transitions = new int[numStates][numSymbols];
         for (int i = 0; i < numStates; i++) {//DFAの遷移関数のテーブルを読み込んで、二次元配列transitionsに格納
             String[] line = dfaScanner.nextLine().split(" ");
+            if (line.length != numSymbols) {
+                System.err.println("Invalid number of symbols in transition function for state " + i);
+                System.exit(1);
+            }
             for (int j = 0; j < numSymbols; j++) {
                 transitions[i][j] = Integer.parseInt(line[j]);
             }
@@ -33,31 +36,29 @@ public class DFAValidator {
         }
         dfaScanner.close();
 
-        // テキストファイルから文字列wを読み込む
-        Scanner wScanner = new Scanner(new File(args[1]));
-        int length = Integer.parseInt(wScanner.nextLine());
-        String w = "";
-        if (length > 0) {
-            w = wScanner.nextLine();
-        }
-        wScanner.close();
 
-        // DFAが文字列wを受理するかどうかを判断する
-        int currentState = startState;
-        for (int i = 0; i < w.length(); i++) {
-            int symbolIndex = alphabet.indexOf(w.charAt(i));
-            if (symbolIndex == -1) {
-                System.err.println("Invalid symbol in w: " + w.charAt(i));
-                System.exit(1);
-            }
-            currentState = transitions[currentState -1][symbolIndex];
+
+// 与えられたDFAが少なくとも1つの文字列を受理するかどうかを判定
+    boolean[] reachable = new boolean[numStates];
+    dfs(startState, reachable, transitions);
+    for (int i = 0; i < numFinalStates; i++) {
+        if (reachable[acceptStates[i]]) {
+            System.out.println("Yes");
+            System.exit(0);
         }
-        for (int acceptState : acceptStates) {
-            if (currentState == acceptState) {
-                System.out.println("w is accepted by the DFA.");
-                return;
-            }
-        }
-        System.out.println("w is not accepted by the DFA.");
     }
+    System.out.println("No");
 }
+
+private static void dfs(int state, boolean[] reachable, int[][] transitions) {
+    if (state < 0 || state >= transitions.length || reachable[state]) {
+        return;
+    }
+    reachable[state] = true;
+    for (int i = 0; i < transitions[state].length; i++) {
+        int nextState = transitions[state][i];
+        dfs(nextState, reachable, transitions);
+    }
+ }
+}
+

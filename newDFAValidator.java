@@ -1,46 +1,41 @@
-//問題2を解く
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class DFAValidator {
+public class newDFAValidator {
     public static void main(String[] args) throws FileNotFoundException {
-        if (args.length != 2) {
-            System.err.println("Usage: java DFAValidator <DFA file> <input string file>");
+        if (args.length != 0) {
+            System.err.println("Usage: java DFAValidator < <input string file>");
             System.exit(1);
         }
 
-        
+        Scanner stdin = new Scanner(System.in);
 
         // テキストファイルからDFAを読み込む
-        Scanner dfaScanner = new Scanner(new File(args[0]));
-        int numStates = dfaScanner.nextInt(); //DFAの状態数
-        int numSymbols = dfaScanner.nextInt();//DFAの入力の数　
-        int numFinalStates = dfaScanner.nextInt();//DFAの受理状態の数
-        dfaScanner.nextLine();//DFAのアルファベットの記号を表す文字列
-        String alphabet = dfaScanner.nextLine();
+        int numStates = stdin.nextInt(); //DFAの状態数
+        int numSymbols = stdin.nextInt();//DFAの入力の数　
+        int numFinalStates = stdin.nextInt();//DFAの受理状態の数
+        stdin.nextLine();//DFAのアルファベットの記号を表す文字列
+        String alphabet = stdin.nextLine();
         int[][] transitions = new int[numStates][numSymbols];
         for (int i = 0; i < numStates; i++) {//DFAの遷移関数のテーブルを読み込んで、二次元配列transitionsに格納
-            String[] line = dfaScanner.nextLine().split(" ");
+            String[] line = stdin.nextLine().split(" ");
             for (int j = 0; j < numSymbols; j++) {
                 transitions[i][j] = Integer.parseInt(line[j]);
             }
         }
-        int startState = dfaScanner.nextInt();//DFAの初期状態
+        int startState = stdin.nextInt();//DFAの初期状態
         int[] acceptStates = new int[numFinalStates];
         for (int i = 0; i < numFinalStates; i++) {
-            acceptStates[i] = dfaScanner.nextInt();
+            acceptStates[i] = stdin.nextInt();
         }
-        dfaScanner.close();
 
-        // テキストファイルから文字列wを読み込む
-        Scanner wScanner = new Scanner(new File(args[1]));
-        int length = Integer.parseInt(wScanner.nextLine());
+        // 標準入力から文字列wを読み込む
+        int length = stdin.nextInt();
         String w = "";
         if (length > 0) {
-            w = wScanner.nextLine();
+            w = stdin.next();
         }
-        wScanner.close();
+        stdin.close();
 
         // DFAが文字列wを受理するかどうかを判断する
         int currentState = startState;
@@ -61,3 +56,4 @@ public class DFAValidator {
         System.out.println("w is not accepted by the DFA.");
     }
 }
+
