@@ -1,16 +1,14 @@
-//問題1を解く
+//(3)を解くプログラム
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class DFAValidator {
+public class alldfa {
     public static void main(String[] args) throws FileNotFoundException {
-        if (args.length != 2) {
-            System.err.println("Usage: java DFAValidator <DFA file> <input string file>");
+        if (args.length != 1) {
+            System.err.println("Usage: java DFAValidator <DFA file> ");
             System.exit(1);
         }
-
-        
 
         // テキストファイルからDFAを読み込む
         Scanner dfaScanner = new Scanner(new File(args[0]));
@@ -33,31 +31,32 @@ public class DFAValidator {
         }
         dfaScanner.close();
 
-        // テキストファイルから文字列wを読み込む
-        Scanner wScanner = new Scanner(new File(args[1]));
-        int length = Integer.parseInt(wScanner.nextLine());
-        String w = "";
-        if (length > 0) {
-            w = wScanner.nextLine();
+        // DFAがすべての文字列を受理するかどうかを判断する
+        boolean acceptsAllStrings = true;
+        for (int i = 0; i < numStates; i++) {
+            for (int j = 0; j < numSymbols; j++) {
+                int nextState = transitions[i][j];
+                if (!acceptsAllStrings && isAcceptState(nextState, acceptStates)) {
+                    acceptsAllStrings = true;
+                }
+            }
         }
-        wScanner.close();
 
-        // DFAが文字列wを受理するかどうかを判断する
-        int currentState = startState;
-        for (int i = 0; i < w.length(); i++) {
-            int symbolIndex = alphabet.indexOf(w.charAt(i));
-            if (symbolIndex == -1) {
-                System.err.println("Invalid symbol in w: " + w.charAt(i));
-                System.exit(1);
-            }
-            currentState = transitions[currentState -1][symbolIndex];
+        // 結果を出力する
+        if (acceptsAllStrings) {
+            System.out.println("Yes");
+        } else {
+            System.out.println("No");
         }
-        for (int acceptState : acceptStates) {
-            if (currentState == acceptState) {
-                System.out.println("w is accepted by the DFA.");
-                return;
+    }
+
+    // 現在の状態が受理状態であるかどうかを判断する
+    private static boolean isAcceptState(int state, int[] acceptStates) {
+        for (int i = 0; i < acceptStates.length; i++) {
+            if (state == acceptStates[i]) {
+                return true;
             }
         }
-        System.out.println("w is not accepted by the DFA.");
+        return false;
     }
 }
